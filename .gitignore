@@ -1,0 +1,55 @@
+## Visual Studio / .NET
+
+# Папки сборки
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+# Файлы состояния Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.rsuser
+
+# Настройки ReSharper / Rider
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Локальные секреты: строка подключения к БД (в репозиторий не попадает)
+db.local.txt
+*.local.txt
+
+# Прочее
+*.tmp
+*.log
+*.cache
+*.pdb
+*.exe
+*.dll
+*.tlog
+*.binlog
+TestResults/
+[Tt]est[Rr]esult*/
+.vscode/
