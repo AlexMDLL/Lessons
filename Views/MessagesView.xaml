@@ -1,0 +1,111 @@
+<UserControl x:Class="WpfApp26.Views.MessagesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform />
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <!-- Плавное появление страницы при переключении раздела -->
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22" />
+                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                     From="16" To="0" Duration="0:0:0.3">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="MessageRowTemplate">
+            <Border Style="{StaticResource CardFlat}" Margin="0,0,0,8" Padding="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Background="{Binding Level, Converter={StaticResource StatusBrush}}"
+                            CornerRadius="2,0,0,2" />
+
+                    <Grid Grid.Column="1" Margin="14,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{Binding Time}" Style="{StaticResource Mono}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Source}" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextDim}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{Binding Text}" FontSize="12.5"
+                                   Foreground="{StaticResource Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        <Border Grid.Column="3" Style="{StaticResource Pill}" Background="#14FFFFFF"
+                                BorderBrush="{Binding Level, Converter={StaticResource StatusBrush}}">
+                            <TextBlock Text="{Binding Level}" FontSize="10.5" FontWeight="SemiBold"
+                                       Foreground="{Binding Level, Converter={StaticResource StatusBrush}}" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel>
+                <TextBlock Text="Сообщения станции" Style="{StaticResource H1}" />
+                <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                           Text="Пакет сообщений, принятых со станции: телеметрия, навигация, системы жизнеобеспечения" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Border Style="{StaticResource Pill}" Margin="0,0,10,0">
+                    <TextBlock Style="{StaticResource Muted}" Foreground="{StaticResource Accent}">
+                        <Run Text="В пакете:" />
+                        <Run Text="{Binding Messages.Count, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </Border>
+                <Button Style="{StaticResource PrimaryButton}" Content="Получить сообщения"
+                        Command="{Binding LoadMessagesCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,16,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="2,0,0,12">
+                    <TextBlock Text="ВХОДЯЩИЙ ПОТОК" Style="{StaticResource Caption}" />
+                    <TextBlock Text="ЗАГРУЗКА..." Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                               Foreground="{StaticResource Accent}"
+                               Visibility="{Binding IsLoadingMessages, Converter={StaticResource BoolToVis}}" />
+                </Grid>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Messages}" ItemTemplate="{StaticResource MessageRowTemplate}" />
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

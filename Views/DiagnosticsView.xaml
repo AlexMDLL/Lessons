@@ -1,0 +1,173 @@
+<UserControl x:Class="WpfApp26.Views.DiagnosticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform />
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <!-- Плавное появление страницы при переключении раздела -->
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22" />
+                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                     From="16" To="0" Duration="0:0:0.3">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="ResultRowTemplate">
+            <Border Style="{StaticResource CardFlat}" Margin="0,0,0,6" Padding="12,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource Text}" VerticalAlignment="Center" />
+
+                    <Border Grid.Column="1" Style="{StaticResource Pill}" Background="#14FFFFFF"
+                            BorderBrush="{Binding Status, Converter={StaticResource StatusBrush}}">
+                        <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{Binding Status, Converter={StaticResource StatusBrush}}" />
+                    </Border>
+
+                    <TextBlock Grid.Column="2" Text="{Binding Detail}" Style="{StaticResource Muted}"
+                               Margin="12,0,0,0" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel>
+                <TextBlock Text="Полная диагностика" Style="{StaticResource H1}" />
+                <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                           Text="Проверка экипажа, подсистем станции и канала связи" />
+            </StackPanel>
+            <Button Style="{StaticResource PrimaryButton}" Content="ЗАПУСТИТЬ ДИАГНОСТИКУ"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" MinWidth="230"
+                    Command="{Binding RunDiagnosticsCommand}" IsEnabled="{Binding IsNotDiagnosticsRunning}" />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,16,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Прогресс -->
+                <Border Grid.Row="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="ХОД ВЫПОЛНЕНИЯ" Style="{StaticResource Caption}" />
+
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Экипаж" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                            <ProgressBar Grid.Column="1" Style="{StaticResource Bar}" Maximum="100"
+                                         Value="{Binding CrewProgress}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{Binding CrewProgress, StringFormat={}{0}%}"
+                                       Style="{StaticResource Mono}" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Двигатели и системы" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                            <ProgressBar Grid.Column="1" Style="{StaticResource Bar}" Maximum="100"
+                                         Value="{Binding SystemsProgress}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{Binding SystemsProgress, StringFormat={}{0}%}"
+                                       Style="{StaticResource Mono}" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Связь" Style="{StaticResource Muted}" VerticalAlignment="Center" />
+                            <ProgressBar Grid.Column="1" Style="{StaticResource Bar}" Maximum="100"
+                                         Value="{Binding CommunicationProgress}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="{Binding CommunicationProgress, StringFormat={}{0}%}"
+                                       Style="{StaticResource Mono}" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Border Style="{StaticResource Divider}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Общий прогресс" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Text}" VerticalAlignment="Center" />
+                            <ProgressBar Grid.Column="1" Style="{StaticResource Bar}" Height="10" Maximum="100"
+                                         Value="{Binding TotalProgress}" VerticalAlignment="Center"
+                                         Foreground="{StaticResource Success}" />
+                            <TextBlock Grid.Column="2" Text="{Binding TotalProgress, StringFormat={}{0}%}"
+                                       Style="{StaticResource Mono}" HorizontalAlignment="Right"
+                                       Foreground="{StaticResource Success}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Вердикт -->
+                <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,14,0,0">
+                    <StackPanel>
+                        <TextBlock Text="РЕЗУЛЬТАТ ДИАГНОСТИКИ" Style="{StaticResource Caption}" />
+                        <TextBlock Text="{Binding Verdict}" FontSize="19" FontWeight="SemiBold" Margin="0,8,0,0"
+                                   TextWrapping="Wrap"
+                                   Foreground="{Binding Verdict, Converter={StaticResource StatusBrush}}" />
+                        <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource Muted}" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Таблица результатов -->
+                <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,14,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="ПРОВЕРЕННЫЕ УЗЛЫ" Style="{StaticResource Caption}" />
+                        <ScrollViewer Grid.Row="1" Margin="0,12,0,0" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding DiagnosticResults}" ItemTemplate="{StaticResource ResultRowTemplate}" />
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

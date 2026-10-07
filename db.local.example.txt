@@ -1,0 +1,1 @@
+Host=<сервер>;Port=<порт>;Username=<логин>;Password=<пароль>;Database=<база>;

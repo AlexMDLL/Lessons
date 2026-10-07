@@ -1,0 +1,113 @@
+<UserControl x:Class="WpfApp26.Views.SystemsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100">
+
+    <UserControl.RenderTransform>
+        <TranslateTransform />
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <!-- Плавное появление страницы при переключении раздела -->
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22" />
+                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                     From="16" To="0" Duration="0:0:0.3">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="SystemRowTemplate">
+            <Border Style="{StaticResource CardFlat}" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+
+                    <Ellipse Width="10" Height="10" VerticalAlignment="Center"
+                             Fill="{Binding Status, Converter={StaticResource StatusBrush}}" />
+
+                    <StackPanel Grid.Column="1" Margin="12,0,12,0">
+                        <TextBlock Text="{Binding Name}" FontSize="13.5" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Text}" />
+                        <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,2,0,0" />
+                    </StackPanel>
+
+                    <Border Grid.Column="2" Style="{StaticResource Pill}" Background="#14FFFFFF"
+                            BorderBrush="{Binding Status, Converter={StaticResource StatusBrush}}">
+                        <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{Binding Status, Converter={StaticResource StatusBrush}}" />
+                    </Border>
+
+                    <TextBlock Grid.Column="3" Text="{Binding LastCheck}" Style="{StaticResource Mono}"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel>
+                <TextBlock Text="Состояние систем" Style="{StaticResource H1}" />
+                <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0"
+                           Text="Телеметрия подсистем станции и замечания по ним" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Border Style="{StaticResource Pill}" Margin="0,0,10,0">
+                    <TextBlock Style="{StaticResource Muted}" Foreground="{StaticResource Success}">
+                        <Run Text="Норма:" />
+                        <Run Text="{Binding SystemsOkCount, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </Border>
+                <Border Style="{StaticResource Pill}" Margin="0,0,10,0" Background="#1AFFC24B" BorderBrush="#55FFC24B">
+                    <TextBlock Style="{StaticResource Muted}" Foreground="{StaticResource Warning}">
+                        <Run Text="Замечаний:" />
+                        <Run Text="{Binding SystemsProblemCount, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </Border>
+                <Button Style="{StaticResource GhostButton}" Content="Обновить телеметрию"
+                        Command="{Binding RefreshSystemsCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,16,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="2,0,0,12">
+                    <TextBlock Text="ПОДСИСТЕМЫ СТАНЦИИ" Style="{StaticResource Caption}" />
+                    <TextBlock Text="ОБНОВЛЕНО" Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                               Margin="0,0,110,0" />
+                </Grid>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Systems}" ItemTemplate="{StaticResource SystemRowTemplate}" />
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
