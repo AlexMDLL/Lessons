@@ -28,14 +28,16 @@ namespace ConsoleApp9
             {
                 Console.WriteLine("\n=== Student Management System ===");
                 Console.WriteLine("1. Show student table");
-                Console.WriteLine("2. Change student age by Id");
-                Console.WriteLine("3. Add a new student");
-                Console.WriteLine("4. Delete a student by Id");
+                Console.WriteLine("2. Find the oldest student");
+                Console.WriteLine("3. Change student age by Id");
+                Console.WriteLine("4. Add a new student");
+                Console.WriteLine("5. Delete a student by Id");
                 Console.WriteLine("0. Exit");
                 Console.Write("\nSelect an action: ");
 
                 string input = Console.ReadLine();
                 Console.Clear();
+
                 switch (input)
                 {
                     case "1":
@@ -43,14 +45,18 @@ namespace ConsoleApp9
                         break;
 
                     case "2":
-                        EditStudentAge();
+                        FindOldestStudent();
                         break;
 
                     case "3":
-                        AddNewStudent();
+                        EditStudentAge();
                         break;
 
                     case "4":
+                        AddNewStudent();
+                        break;
+
+                    case "5":
                         DeleteStudent();
                         break;
 
@@ -72,7 +78,30 @@ namespace ConsoleApp9
             PrintTable(studentTable);
         }
 
+        static void FindOldestStudent()
+        {
+            DataRow oldestStudent = null;
+            int maximumAge = -1;
+            foreach (DataRow currentRow in studentTable.Rows)
+            {
+                int currentAge = (int)currentRow["Age"];
+                if (currentAge > maximumAge)
+                {
+                    maximumAge = currentAge;
+                    oldestStudent = currentRow;
+                }
+            }
 
+            if (oldestStudent != null)
+            {
+                Console.WriteLine("\nThe oldest student is: " +
+                    oldestStudent["Name"] + " (Age: " + maximumAge + ")");
+            }
+            else
+            {
+                Console.WriteLine("\nThe table is empty.");
+            }
+        }
 
         static void EditStudentAge()
         {
