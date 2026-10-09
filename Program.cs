@@ -39,14 +39,19 @@ namespace ConsoleApp10
             studentsTable.Rows.Add(8, "Волкова Ольга", 3);
             studentsTable.Rows.Add(9, "Лебедев Максим", 3);
             studentsTable.Rows.Add(10, "Соколова Дарья", 99);
-            Console.WriteLine("Дубликат первичного ключа");
+            Console.WriteLine("Нажмайте любую клавишу");
+            Console.ReadLine();
+            
+            Console.WriteLine("Задание: Дубликат первичного ключа");
             try
             {
                 groupsTable.Rows.Add(1, "Дублирующая группа");
                 Console.WriteLine("Запись добавлена.");
+                Console.ReadLine();
             }
+
             catch (Exception ex) { Console.WriteLine("Ошибка целостности: " + ex.Message); }
-            Console.WriteLine("\n Пустое название группы");
+            Console.WriteLine("\nЗадание:  Пустое название группы");
             try
             {
                 DataRow newGroup = groupsTable.NewRow();
@@ -56,8 +61,9 @@ namespace ConsoleApp10
                 Console.WriteLine("Запись добавлена.");
             }
             catch (Exception ex) { Console.WriteLine("Ошибка: " + ex.Message); }
-            Console.WriteLine("\n Студенты без группы ");
+            Console.WriteLine("\nЗадание:  Студенты без группы ");
             FindOrphanStudents(studentsTable, groupsTable, groupStudentRelation);
+            Console.ReadLine();
         }
         static void GroupsTable_ColumnChanging(object sender, DataColumnChangeEventArgs e)
         {
@@ -68,7 +74,9 @@ namespace ConsoleApp10
                 {
                     Console.WriteLine("Отмена изменения: название группы не может быть пустым.");
                     e.Row.RejectChanges();
+                    Console.ReadLine();
                     throw new Exception("Название группы не может быть пустым.");
+
                 }
             }
         }
@@ -84,6 +92,7 @@ namespace ConsoleApp10
                 {
                     Console.WriteLine("Студент \"" + student["StudentName"] + "\" (Id=" + student["StudentId"] + ") ссылается на несуществующую группу GroupId=" + student["GroupId"]);
                     orphanCount++;
+                    Console.ReadLine();
                 }
             }
             if (orphanCount == 0) { Console.WriteLine("Все студенты привязаны к существующим группам."); }
