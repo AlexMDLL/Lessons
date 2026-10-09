@@ -51,6 +51,7 @@ namespace ConsoleApp10
             }
 
             catch (Exception ex) { Console.WriteLine("Ошибка целостности: " + ex.Message); }
+            Console.ReadLine();
             Console.WriteLine("\nЗадание:  Пустое название группы");
             try
             {
@@ -61,9 +62,10 @@ namespace ConsoleApp10
                 Console.WriteLine("Запись добавлена.");
             }
             catch (Exception ex) { Console.WriteLine("Ошибка: " + ex.Message); }
+            Console.ReadLine();
             Console.WriteLine("\nЗадание:  Студенты без группы ");
             FindOrphanStudents(studentsTable, groupsTable, groupStudentRelation);
-            Console.ReadLine();
+            
         }
         static void GroupsTable_ColumnChanging(object sender, DataColumnChangeEventArgs e)
         {
