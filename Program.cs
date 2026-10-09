@@ -65,7 +65,9 @@ namespace ConsoleApp10
             Console.ReadLine();
             Console.WriteLine("\nЗадание:  Студенты без группы ");
             FindOrphanStudents(studentsTable, groupsTable, groupStudentRelation);
-            
+            Console.WriteLine("\n Итоговое состояние таблиц ");
+            PrintTables(groupsTable, studentsTable);
+
         }
         static void GroupsTable_ColumnChanging(object sender, DataColumnChangeEventArgs e)
         {
@@ -99,6 +101,42 @@ namespace ConsoleApp10
             }
             if (orphanCount == 0) { Console.WriteLine("Все студенты привязаны к существующим группам."); }
             else { Console.WriteLine("\nВсего найдено студентов без группы: " + orphanCount); }
+        }
+        static void PrintTables(DataTable groupsTable, DataTable studentsTable)
+        {
+            Console.WriteLine("\n--- Таблица Groups ---");
+            foreach (DataColumn column in groupsTable.Columns)
+            {
+                Console.Write(column.ColumnName.PadRight(15));
+            }
+            Console.WriteLine();
+            Console.WriteLine(new string('-', 30));
+
+            foreach (DataRow row in groupsTable.Rows)
+            {
+                foreach (object item in row.ItemArray)
+                {
+                    Console.Write(item.ToString().PadRight(15));
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\n--- Таблица Students ---");
+            foreach (DataColumn column in studentsTable.Columns)
+            {
+                Console.Write(column.ColumnName.PadRight(20));
+            }
+            Console.WriteLine();
+            Console.WriteLine(new string('-', 60));
+
+            foreach (DataRow row in studentsTable.Rows)
+            {
+                foreach (object item in row.ItemArray)
+                {
+                    Console.Write(item.ToString().PadRight(20));
+                }
+                Console.WriteLine();
+            }
         }
     }
 }
