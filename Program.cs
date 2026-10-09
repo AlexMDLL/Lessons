@@ -16,43 +16,78 @@ namespace ConsoleApp10
             groupsTable.Columns.Add("GroupId", typeof(int));
             groupsTable.Columns.Add("GroupName", typeof(string));
             groupsTable.PrimaryKey = new DataColumn[] { groupsTable.Columns["GroupId"] };
+            groupsTable.ColumnChanging += GroupsTable_ColumnChanging;
             DataTable studentsTable = new DataTable("Students");
             studentsTable.Columns.Add("StudentId", typeof(int));
             studentsTable.Columns.Add("StudentName", typeof(string));
-            studentsTable.Columns.Add("Age", typeof(int));
             studentsTable.Columns.Add("GroupId", typeof(int));
             studentsTable.PrimaryKey = new DataColumn[] { studentsTable.Columns["StudentId"] };
-            groupsTable.Rows.Add(1, "CS-101");
-            groupsTable.Rows.Add(2, "CS-102");
-            groupsTable.Rows.Add(3, "Math-201");
-            studentsTable.Rows.Add(1, "Ivanov Ivan", 20, 1);
-            studentsTable.Rows.Add(2, "Petrova Anna", 22, 1);
-            studentsTable.Rows.Add(3, "Sidorov Alexey", 19, 1);
-            studentsTable.Rows.Add(4, "Kozlova Maria", 21, 2);
-            studentsTable.Rows.Add(5, "Novikov Dmitry", 23, 2);
-            studentsTable.Rows.Add(6, "Fedorova Elena", 20, 2);
-            studentsTable.Rows.Add(7, "Smirnov Oleg", 19, 3);
-            studentsTable.Rows.Add(8, "Volkova Olga", 20, 3);
-            studentsTable.Rows.Add(9, "Lebedev Maxim", 21, 3);
-            studentsTable.Rows.Add(10, "Sokolova Daria", 22, 3);
             universityDataSet.Tables.Add(groupsTable);
             universityDataSet.Tables.Add(studentsTable);
-            DataRelation groupStudentRelation = new DataRelation( "GroupStudentsRelation", groupsTable.Columns["GroupId"], studentsTable.Columns["GroupId"] );
+            DataRelation groupStudentRelation = new DataRelation("GroupStudents", groupsTable.Columns["GroupId"], studentsTable.Columns["GroupId"], createConstraints: false);
             universityDataSet.Relations.Add(groupStudentRelation);
-            int targetGroupId = 2;
-            DataRow targetGroup = groupsTable.Rows.Find(targetGroupId);
-            if (targetGroup != null)
+            groupsTable.Rows.Add(1, "ИС-101");
+            groupsTable.Rows.Add(2, "ИС-102");
+            groupsTable.Rows.Add(3, "CS-2");
+            studentsTable.Rows.Add(1, "Иванов Иван", 1);
+            studentsTable.Rows.Add(2, "Петрова Анна", 1);
+            studentsTable.Rows.Add(3, "Сидоров Алексей", 1);
+            studentsTable.Rows.Add(4, "Козлова Мария", 2);
+            studentsTable.Rows.Add(5, "Новиков Дмитрий", 2);
+            studentsTable.Rows.Add(6, "Федорова Елена", 2);
+            studentsTable.Rows.Add(7, "Смирнов Олег", 3);
+            studentsTable.Rows.Add(8, "Волкова Ольга", 3);
+            studentsTable.Rows.Add(9, "Лебедев Максим", 3);
+            studentsTable.Rows.Add(10, "Соколова Дарья", 99);
+            Console.WriteLine("Дубликат первичного ключа");
+            try
             {
-                Console.WriteLine("Students in group: " + targetGroup["GroupName"]);
-                Console.WriteLine(new string('-', 30));
-                DataRow[] groupStudents = targetGroup.GetChildRows(groupStudentRelation);
-
-                foreach (DataRow student in groupStudents)
+                groupsTable.Rows.Add(1, "Дублирующая группа");
+                Console.WriteLine("Запись добавлена.");
+            }
+            catch (Exception ex) { Console.WriteLine("Ошибка целостности: " + ex.Message); }
+            Console.WriteLine("\n Пустое название группы");
+            try
+            {
+                DataRow newGroup = groupsTable.NewRow();
+                newGroup["GroupId"] = 4;
+                newGroup["GroupName"] = "";
+                groupsTable.Rows.Add(newGroup);
+                Console.WriteLine("Запись добавлена.");
+            }
+            catch (Exception ex) { Console.WriteLine("Ошибка: " + ex.Message); }
+            Console.WriteLine("\n Студенты без группы ");
+            FindOrphanStudents(studentsTable, groupsTable, groupStudentRelation);
+        }
+        static void GroupsTable_ColumnChanging(object sender, DataColumnChangeEventArgs e)
+        {
+            if (e.Column.ColumnName == "GroupName")
+            {
+                string value = e.ProposedValue as string;
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    Console.WriteLine("Name: " + student["StudentName"] + ", Age: " + student["Age"]);
+                    Console.WriteLine("Отмена изменения: название группы не может быть пустым.");
+                    e.Row.RejectChanges();
+                    throw new Exception("Название группы не может быть пустым.");
                 }
             }
-            else { Console.WriteLine("Group not found."); }
+        }
+        static void FindOrphanStudents(DataTable studentsTable, DataTable groupsTable, DataRelation relation)
+        {
+            int orphanCount = 0;
+
+            foreach (DataRow student in studentsTable.Rows)
+            {
+                DataRow parentGroup = student.GetParentRow(relation);
+
+                if (parentGroup == null)
+                {
+                    Console.WriteLine("Студент \"" + student["StudentName"] + "\" (Id=" + student["StudentId"] + ") ссылается на несуществующую группу GroupId=" + student["GroupId"]);
+                    orphanCount++;
+                }
+            }
+            if (orphanCount == 0) { Console.WriteLine("Все студенты привязаны к существующим группам."); }
+            else { Console.WriteLine("\nВсего найдено студентов без группы: " + orphanCount); }
         }
     }
 }
