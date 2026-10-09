@@ -137,6 +137,7 @@ namespace ConsoleApp10
                 }
                 Console.WriteLine();
             }
+            Console.ReadLine();
         }
     }
 }
