@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+# Локальные секреты: строка подключения к БД (в репозиторий не попадает)
+db.local.txt
+db.local.ME.txt
+*.local.txt
