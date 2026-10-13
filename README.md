@@ -50,3 +50,16 @@ git log --oneline -5       # последние коммиты
 git pull                   # забрать изменения с GitHub
 git push                   # отправить свои коммиты на GitHub
 ```
+Вот примерно что прописывать при подключении гита через консоль:
+```powershell
+git init
+git add .
+git config --global user.email "YOUR EMAIL"
+git config --global user.name "YOUR NAME"
+git remote remove origin
+git remote add origin https://github.com/YOUR_NAME/Lessons.git
+git checkout YOUR_BRANCH
+git branch -M YOUR_BRANCH
+git commit -m "YOUR_BRANCH"
+git push -u origin YOUR_BRANCH --force
+```
