@@ -320,13 +320,12 @@ namespace ConsoleApp7
             this.EnsureDataLoaded();
             Console.WriteLine(
                 $"{"ID",-10} |" +
-                $" {"Псевдоним",-20} |" +
+                $" {"Никнейм",-20} |" +
                 $" {"Имя",-20} |" +
                 $" {"Фамилия",-20} |" +
                 $" {"Группа",-15}"
             );
             Console.WriteLine(new string('-', 95));
-
             foreach (DataRow row in this.dataTable.Rows)
             {
                 Console.WriteLine(
