@@ -10,6 +10,7 @@ namespace ConsoleApp7
     {
         static void Main(string[] args)
         {
+            new Practice().ExecuteAsync().Wait();
         }
     }
 }
