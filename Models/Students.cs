@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp8.Models
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ConsoleApp8.Models
 {
     public class Student
     {
@@ -6,8 +8,7 @@
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public int Age { get; set; }
-        ////public string Email { get; set; } = string.Empty;
-        ////public int EnrollmentYear { get; set; }
-        ////public bool IsActive { get; set; }
+        public int GroupId { get; set; }
+        public Group Group { get; set; } = null!;
     }
 }

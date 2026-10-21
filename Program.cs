@@ -17,9 +17,91 @@ var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
 try
 {
+    //Урок 4 П1
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("Урок 4 П1 \n");
+    Console.ResetColor();
 
-    // П1
+    var StudWhGrp = await db.Students
+        .Include(s => s.Group)
+        .OrderBy(s => s.LastName)
+        .ThenBy(s => s.FirstName)
+        .ToListAsync();
 
+    if (StudWhGrp.Count == 0)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("Список студентов пуст.");
+        Console.ResetColor();
+    }
+    else { foreach (var st in StudWhGrp) { 
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"\n{st.FirstName} {st.LastName} — Группа: {st.Group.Name}");
+            Console.ResetColor();
+        }
+    }
+    Console.ReadLine();
+    Console.Beep();
+    Console.Clear();
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("Урок 4 П2 \n");
+    Console.ResetColor();
+
+    // Запрос начинается с Groups, чтобы не потерять пустые группы.
+    var GrpSt = await db.Groups
+        .OrderBy(g => g.Name)
+        .Select(g => new
+        {
+            GroupName = g.Name,
+            StudentCount = g.Students.Count(),
+            MinorCount = g.Students.Count(s => s.Age < 18),
+            AverageAge = g.Students.Select(s => (double?)s.Age).Average(),
+            HasMinors = g.Students.Any(s => s.Age < 18)
+        })
+        .ToListAsync();
+
+    if (GrpSt.Count == 0)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("Группы не найдены.");
+        Console.ResetColor();
+    }
+    else
+    {
+        foreach (var i in GrpSt)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"\nГруппа: {i.GroupName}");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine($"Студентов: {i.StudentCount}");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"Несовершеннолетних: {i.MinorCount}");
+            Console.ResetColor();
+
+            if (i.AverageAge.HasValue) { 
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.WriteLine($"Средний возраст: {i.AverageAge.Value:f0}"); 
+                Console.ResetColor();
+            }
+            else {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Средний возраст: нет данных (группа пуста)");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine(i.HasMinors ? "Есть несовершеннолетние: Да" : "Есть несовершеннолетние: Нет");
+        }
+    }
+
+    // Урок 3 П1
+    Console.ReadLine();
+    Console.Beep();
+    Console.Clear();
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("Урок 3 П1\n ");
+    Console.ResetColor();
     Console.Write("\nМинимальный возраст: ");
     string? minInp = Console.ReadLine();
     if (!int.TryParse(minInp, out int minA))
@@ -69,26 +151,22 @@ try
         .Take(pageSize)
         .ToListAsync();
 
-    Console.WriteLine("\n\n П1 \n");
-
     if (LStud.Count == 0)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("\nСтуденты по заданным критериям не найдены.");
         Console.ResetColor();
     }
-    else
-    {
-        foreach (var st in LStud)
-        {
-            Console.WriteLine($"{st.FirstName} {st.LastName}, {st.Age}");
-        }
-    }
-
+    else {  foreach (var st in LStud) { Console.WriteLine($"\n{st.FirstName} {st.LastName}, {st.Age}"); } }
     Console.WriteLine($"\nЕсть несовершеннолетние студенты: {HasM}\n");
 
-    // П2
-    Console.WriteLine("\n\n П2\n ");
+    //Урок 3 П2
+    Console.ReadLine();
+    Console.Beep();
+    Console.Clear();
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("Урок 3 П2\n ");
+    Console.ResetColor();
 
     // Общее количество студентов
     var totalCount = await db.Students.CountAsync();
@@ -98,7 +176,7 @@ try
     {
         // Средний возраст
         var avgAge = await db.Students.AverageAsync(s => s.Age);
-        Console.WriteLine($"\nСредний возраст: {avgAge:F1}\n");
+        Console.WriteLine($"\nСредний возраст: {avgAge:f0}\n");
 
         // Минимальный и максимальный возраст
         var minAgeVal = await db.Students.MinAsync(s => s.Age);
@@ -118,14 +196,15 @@ try
             .OrderBy(x => x.Age)
             .ToListAsync();
 
-        foreach (var item in ageStats)
-        {
-            Console.WriteLine($"{item.Age} лет — {item.Count}");
-        }
-
+        foreach (var i in ageStats) { Console.WriteLine($"{i.Age} лет — {i.Count}"); }
         // Проверка: все ли студенты совершеннолетние
         var allAdults = await db.Students.AllAsync(s => s.Age >= 18);
         Console.WriteLine($"\nВсе студенты совершеннолетние: {allAdults}\n");
+        Console.ReadLine();
+        Console.Beep();
+        Console.Clear();
+        Console.ReadLine();
+        Console.Beep();
     }
     else
     {
@@ -140,3 +219,4 @@ catch
     Console.WriteLine($"Что то не то, удаляй VS:) <3");
     Console.ResetColor();
 }
+finally { Console.ReadKey(); }
